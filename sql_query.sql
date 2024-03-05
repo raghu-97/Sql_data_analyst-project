@@ -1,6 +1,6 @@
---select * from portfolio_project..[Covid Vaccination]
+select * from portfolio_project..[Covid Vaccination]
 -----------------------------------------------------------------------------------------------------------------------------------------------
-/* alter table portfolio_project..[Covid Vaccination] DROP COLUMN column5,-- removing all the column with no value that got added from excel csv file
+ alter table portfolio_project..[Covid Vaccination] DROP COLUMN column5,-- removing all the column with no value that got added from excel csv file
            column6,
            column7,
            column8,
@@ -21,29 +21,35 @@
            column23,
            column24,
            column25,
-           column26; */
+           column26; 
 --------------------------------------------------------------------------------------------------------------------------------
---select * from portfolio_project..[Covid Vaccination] --viewing table
+select * from portfolio_project..[Covid Vaccination] --viewing table
 --------------------------------------------------------------------------------------------------------------------------------
---select * from portfolio_project..Covid_death-- viewing table
+select * from portfolio_project..Covid_death-- viewing table
 --------------------------------------------------------------------------------------------------------------------------------
 -- data that we are using
-           --select location,date,total_cases,new_cases,total_deaths, population from portfolio_project..Covid_death order by 1,2
+           select location,date,total_cases,new_cases,total_deaths, 
+	population from portfolio_project..Covid_death order by 1,2
 --------------------------------------------------------------------------------------------------------------------------------
 --adding new column as death percentage , adding formula, using alias for naming the column, *1.00 is added to ensure that it gives back the floating value , else it is returning every value as 0 
---------------------------------------------------------------------------------------------------------------------------------
-           --select location,date,total_cases,total_deaths,(total_deaths*1.00/total_cases)*100 as Death_percentage from portfolio_project..Covid_death order by 1,2
+
+           select location,date,total_cases,total_deaths,(total_deaths*1.00/total_cases)*100 as Death_percentage
+	    from portfolio_project..Covid_death order by 1,2
 --------------------------------------------------------------------------------------------------------------------------------
 --selecting the country which have state in it using like statement(getting the data of specific Country)
-           ---select location,date,total_cases,total_deaths,(total_deaths*1.00/total_cases)*100 as Death_percentage from portfolio_project..Covid_death where location like '%state%'
+           select location,date,total_cases,total_deaths,(total_deaths*1.00/total_cases)*100 as Death_percentage 
+             from portfolio_project..Covid_death where location like '%state%'
 ---------------------------------------------------------------------------------------------------------------------------------------------
 --looking at total case vs Population (shows total population got covid)
-         ---select location,date,total_cases,population,(total_cases*1.00/population)*100 as Covid_effected_people_percentage from portfolio_project..Covid_death where location like '%state%'
+         ---select location,date,total_cases,population,(total_cases*1.00/population)*100 as Covid_effected_people_percentage 
+          from portfolio_project..Covid_death where location like '%state%'
  -------------------------------------------------------------------------------------------------------------------------------------------------
 --- using group by , order by ; (finding the Highest Infection rate of covid)
-      --- select location,population, MAX(total_cases) AS Highest_Infected,MAX((total_cases*1.00/population)*100) as highest_Covid_effected_people_percentage from portfolio_project..Covid_death group by population, location order by highest_Covid_effected_people_percentage desc
+      select location,population, MAX(total_cases) AS Highest_Infected,MAX((total_cases*1.00/population)*100) 
+      as highest_Covid_effected_people_percentage
+      from portfolio_project..Covid_death group by population, location order by highest_Covid_effected_people_percentage desc
 --- using group by , order by ; (finding the Highest death rate of covid), using cast 
-              /* SELECT 
+               SELECT 
                location, 
                MAX(CAST(total_deaths AS BIGINT)) AS Highest_death,
                MAX((total_deaths * 1.00 / population) * 100) AS highest_Covid_death_people_percentage 
@@ -54,26 +60,26 @@
             GROUP BY 
                location 
             ORDER BY 
-               Highest_death DESC;*/
+               Highest_death DESC;
 -------------------------------------------------------------------------------------------------------------------------------------
-               /*   SELECT                    (list of continent)
+                SELECT                    (list of continent)
                continent 
             FROM 
                portfolio_project..Covid_death 
             WHERE 
                continent IS  NULL
             GROUP BY 
-                 continent */
+                 continent 
  -----------------------------------------------------------------------------------------------------------------------------    
-            /* SELECT                    --(list of location where continent is null )
+            SELECT                    --(list of location where continent is null )
                location 
             FROM 
                portfolio_project..Covid_death 
             WHERE 
                continent IS NULL                    --- uswe not null for to get list of country
-            group by location  */
+            group by location 
 ------------------------------------------------------------------------------------------------------------------------------
-           /* SELECT 
+            SELECT 
                continent, 
                MAX(CAST(total_deaths AS BIGINT)) AS Highest_death,
                MAX((total_deaths * 1.00 / population) * 100) AS highest_Covid_death_people_percentage 
@@ -84,10 +90,10 @@
             GROUP BY 
                location 
             ORDER BY 
-               Highest_death DESC; */
+               Highest_death DESC; 
 --------------------------------------------------------------------------------------------------------------------------------
     -- Using of join , partiton by, to find the poulation who recieved least vaccine
-	/*Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
+	Select dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
    SUM(ISNULL(CONVERT(bigint, vac.new_vaccinations), 0)) OVER (Partition by dea.location order by (CONVERT(bigint, vac.new_vaccinations))) as RollingPeopleVaccinated
 --, (RollingPeopleVaccinated/population)*100
 From portfolio_project..Covid_death dea
@@ -98,7 +104,7 @@ where dea.continent is not null */
 
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 --USing CTE 
-/* WITH CTE AS (
+ WITH CTE AS (
     SELECT 
         dea.continent, 
         dea.location, 
@@ -116,10 +122,10 @@ where dea.continent is not null */
 -- Main query using the CTE
 Select *, (RollingPeopleVaccinated*1.0/Population)*100 as rolling_vacinating_population_percent
 FROM 
-    CTE; */
+    CTE; 
 -----------------------------------------------------------------------------------------------------------------------------------------------------
 -- Create a temporary table to store the intermediate result
- /* CREATE TABLE #Temp_RollingPeopleVaccinated (
+  CREATE TABLE #Temp_RollingPeopleVaccinated (
     continent VARCHAR(255),
     location VARCHAR(255),
     date DATE,
@@ -160,12 +166,12 @@ DROP TABLE #Temp_RollingPeopleVaccinated; */
 ------------------------------------------------------------------------------------------------------------------------------------------------
 -- Creating View to store data for later visualizations
 
- /* Create View HighestCovidinfection as 
+ Create View HighestCovidinfection as 
       select location,population, MAX(total_cases) 
 	  AS Highest_Infected,MAX((total_cases*1.00/population)*100) 
 	  as highest_Covid_effected_people_percentage from portfolio_project..Covid_death 
 	  group by population, location 
 	  --order by highest_Covid_effected_people_percentage desc --The ORDER BY clause is invalid in views, inline functions, derived tables, subqueries, and common table expressions, unless TOP, OFFSET or FOR XML is also specified.
 
-	  */
+	  
 
